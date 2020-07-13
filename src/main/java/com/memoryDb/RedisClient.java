@@ -2,22 +2,13 @@ package com.memoryDb;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.springframework.data.redis.connection.jedis.JedisConnection;
 import org.springframework.stereotype.Service;
-import redis.clients.jedis.*;
-import redis.clients.jedis.exceptions.JedisConnectionException;
+import redis.clients.jedis.Jedis;
 
-import javax.annotation.PostConstruct;
-import java.net.InetAddress;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * @author bakar
- * @since 7.08.2019 11:22
- */
 @Service("redisClient")
 public class RedisClient {
 
@@ -35,7 +26,7 @@ public class RedisClient {
 
         String[] jedisEndpoints = serverList.split(";");
         for (String jedisEndpoint : jedisEndpoints) {
-            jedisConnections.add(new JedisConnection(new Jedis(jedisEndpoint,REDIS_PORT,500)));
+            jedisConnections.add(new JedisConnection(new Jedis(jedisEndpoint, REDIS_PORT, 500)));
         }
 
     }
@@ -47,28 +38,30 @@ public class RedisClient {
             String redisHost = jedisConnection.getJedis().getClient().getHost();
             String redisResponse = jedisConnection.getJedis().get(key.getKey());
 
-            response.add(makeJson(redisHost,key.getKey(),redisResponse));
+            response.add(makeJson(redisHost, key.getKey(), redisResponse));
         }
         return response;
     }
+
     public JsonArray getSet(HashEntity hashEntity) {
 
         JsonArray response = new JsonArray();
         for (JedisConnection jedisConnection : getJedisConnections()) {
             String redisHost = jedisConnection.getJedis().getClient().getHost();
             String redisResponse = jedisConnection.getJedis().hget(hashEntity.getKey(), hashEntity.getField());
-            response.add(makeJson(redisHost,hashEntity.getKey(),hashEntity.getField(),redisResponse));
+            response.add(makeJson(redisHost, hashEntity.getKey(), hashEntity.getField(), redisResponse));
         }
         return response;
     }
 
-    private JsonObject makeJson(String... value){
+    private JsonObject makeJson(String... value) {
         JsonObject jsonObject = new JsonObject();
         for (int i = 0; i < value.length; i++) {
-            jsonObject.addProperty(i+"",value[i]);
+            jsonObject.addProperty(i + "", value[i]);
         }
         return jsonObject;
     }
+
     public List<JedisConnection> getJedisConnections() {
 
         if (jedisConnections == null || jedisConnections.isEmpty())
