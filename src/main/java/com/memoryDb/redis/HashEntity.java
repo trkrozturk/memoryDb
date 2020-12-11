@@ -1,4 +1,4 @@
-package com.memoryDb;
+package com.memoryDb.redis;
 
 import lombok.Getter;
 import lombok.Setter;

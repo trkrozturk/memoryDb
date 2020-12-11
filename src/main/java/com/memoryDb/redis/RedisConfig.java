@@ -1,4 +1,4 @@
-package com.memoryDb;
+package com.memoryDb.redis;
 
 import org.springframework.context.annotation.Configuration;
 import redis.clients.jedis.JedisPoolConfig;
