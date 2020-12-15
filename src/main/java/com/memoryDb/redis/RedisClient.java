@@ -2,15 +2,18 @@ package com.memoryDb.redis;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.memoryDb.KeyEntity;
+import com.google.gson.JsonParser;
+import com.memoryDb.ResponseObject;
+import com.memoryDb.constants.ResponseTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.JedisPool;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import static com.memoryDb.Constants.REDIS_LIST;
+import static com.memoryDb.constants.RedisServerList.REDIS_LIST;
 
 @Service("redisClient")
 public class RedisClient {
@@ -77,12 +80,36 @@ public class RedisClient {
         this.dsProcess = dsProcess;
     }
 
-    public String getInfo(Redis redis) {
+    public String getInfo(String id) {
+
+        Optional<Redis> redis = REDIS_LIST.stream().filter(a -> a.getId().equals(id)).findFirst();
+        if (redis.isPresent()) {
+            for (JedisPool jedisConnection : getJedisConnections()) {
+                if (jedisConnection.getResource().getClient().getHost().equals(redis.get().getIp()) && jedisConnection.getResource().getClient().getPort() == redis.get().getPort()) {
+                    return new ResponseObject("Info Result",jedisConnection.getResource().info(), ResponseTypes.OK).toString();
+                }
+            }
+        }
+
+        return new ResponseObject("No Redis found With Given id",ResponseTypes.NOT_FOUND).toString();
+    }
+
+    public String setKey(KeyValue keyValue) {
         for (JedisPool jedisConnection : getJedisConnections()) {
-            if (jedisConnection.getResource().getClient().getHost().equals(redis.getIp()) && jedisConnection.getResource().getClient().getPort() == redis.getPort()) {
-                return jedisConnection.getResource().info();
+            if (jedisConnection.getResource().getClient().getHost().equals(keyValue.getIp())) {
+
+                return jedisConnection.getResource().set(keyValue.getKey(), keyValue.getValue());
             }
         }
         return null;
+    }
+
+    public String getAllRedis() {
+        JsonArray jsonArray = new JsonArray();
+        JsonParser parser = new JsonParser();
+        for (Redis redis : REDIS_LIST) {
+            jsonArray.add(parser.parse(redis.toString()).getAsJsonObject());
+        }
+        return jsonArray.toString();
     }
 }

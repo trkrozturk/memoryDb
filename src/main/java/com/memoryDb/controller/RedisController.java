@@ -1,15 +1,10 @@
 package com.memoryDb.controller;
 
-import com.memoryDb.KeyEntity;
-import com.memoryDb.redis.DsProcess;
-import com.memoryDb.redis.HashEntity;
-import com.memoryDb.redis.Redis;
-import com.memoryDb.redis.RedisClient;
+import com.memoryDb.ResponseObject;
+import com.memoryDb.constants.ResponseTypes;
+import com.memoryDb.redis.*;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,10 +24,23 @@ public class RedisController {
     public String getKey(@RequestBody KeyEntity key) {
         return redisClient.getKey(key).getAsJsonArray().toString();
     }
+    @PostMapping(value = "/setKey")
+    public String getKey(@RequestBody KeyValue keyValue) {
+        return redisClient.setKey(keyValue);
+    }
 
     @PostMapping(value = "/addRedis", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String addRedis(@RequestBody List<Redis> redisList) {
-        return dsProcess.addRedisDs(redisList) ? "true" : "false";
+    public String addRedis(@RequestBody Redis redis) {
+        return dsProcess.addRedisDs(redis);
+    }
+    @DeleteMapping(value = "/removeRedis/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String removeRedis(@PathVariable(value="id") String id) {
+        return dsProcess.removeRedisDs(id);
+    }
+
+    @GetMapping(value = "/getAllRedis", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getAllRedis() {
+        return redisClient.getAllRedis();
     }
 
     @PostMapping(value = "/getSet")
@@ -40,8 +48,8 @@ public class RedisController {
         return redisClient.getSet(hashEntity).getAsJsonArray().toString();
     }
 
-    @PostMapping(value = "/getInfo")
-    public String getInfo(@RequestBody Redis redis) {
-        return redisClient.getInfo(redis);
+    @GetMapping(value = "/getInfo/{id}")
+    public String getInfo(@PathVariable(value="id") String id) {
+        return redisClient.getInfo(id);
     }
 }

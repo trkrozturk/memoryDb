@@ -1,5 +1,7 @@
 package com.memoryDb;
 
+import com.memoryDb.redis.DsProcess;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -8,6 +10,7 @@ public class MemoryDbApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(MemoryDbApplication.class, args);
+
 //        ClientConfig clientConfig = new ClientConfig();
 //        ClientNetworkConfig clientNetworkConfig = new ClientNetworkConfig();
 //        clientNetworkConfig.setAddresses(Arrays.asList("192.168.42.168:6785","192.168.42.168:6786","192.168.42.168:6787","192.168.42.168:6788","192.168.42.168:6799"));
