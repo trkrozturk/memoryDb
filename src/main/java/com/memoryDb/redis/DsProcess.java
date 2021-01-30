@@ -45,6 +45,9 @@ public class DsProcess {
     }
 
     private boolean checkDuplicate(Redis redis) {
+        if (REDIS_LIST == null || REDIS_LIST.isEmpty()) {
+            return false;
+        }
         for (Redis redis1 : REDIS_LIST) {
             if (redis1.getIp().equals(redis.getIp()) && redis1.getPort() == redis.getPort()) {
                 return true;

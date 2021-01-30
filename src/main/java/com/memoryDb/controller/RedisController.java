@@ -6,6 +6,7 @@ import com.memoryDb.redis.*;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -39,7 +40,7 @@ public class RedisController {
     }
 
     @GetMapping(value = "/getAllRedis", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getAllRedis() {
+    public String getAllRedis(HttpServletRequest request) {
         return redisClient.getAllRedis();
     }
 
